@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý Kho hàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-slate-800">
+<div th:replace="~{fragments/mba-header :: navbar}"></div>
+
+<div class="flex max-w-7xl mx-auto px-4 py-8">
+    <div th:replace="~{fragments/mba-admin-sidebar :: sidebar}"></div>
+
+    <main class="flex-1 p-8 w-full">
+    <h1 class="text-2xl font-bold mb-6">📦 Quản lý Kho Hàng</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-xl shadow h-fit border border-gray-100">
+            <h2 class="text-lg font-bold mb-4 text-green-700">Nhập Hàng Vào Kho</h2>
+            <form th:action="@{/mba-admin/warehouse/import}" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Chọn sản phẩm</label>
+                    <select name="productId" class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none" required>
+                        <option th:each="p : ${products}"
+                                th:value="${p.mbaProductId}"
+                                th:text="${p.mbaName} + ' (Hiện có: ' + ${p.mbaStock} + ')'"></option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Số lượng nhập thêm</label>
+                    <input type="number" name="quantity" min="1" value="10" required class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Ghi chú nguồn gốc</label>
+                    <textarea name="note" rows="2" placeholder="VD: Nhập lô hàng tháng 12..." class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none"></textarea>
+                </div>
+                <button class="w-full bg-green-600 text-white font-bold py-2 rounded-lg hover:bg-green-700 shadow-lg shadow-green-500/30">
+                    Xác nhận Nhập Kho
+                </button>
+            </form>
+        </div>
+
+        <div class="md:col-span-2 bg-white p-6 rounded-xl shadow border border-gray-100">
+            <h2 class="text-lg font-bold mb-4">Lịch sử Biến động Kho</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-100 uppercase text-xs">
+                    <tr>
+                        <th class="p-3">Thời gian</th>
+                        <th class="p-3">Sản phẩm</th>
+                        <th class="p-3">Loại</th>
+                        <th class="p-3">Số lượng</th>
+                        <th class="p-3">Ghi chú</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                    <tr th:each="log : ${logs}">
+                        <td class="p-3 text-gray-500" th:text="${#temporals.format(log.mbaCreatedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="p-3 font-bold text-gray-800" th:text="${log.product.mbaName}"></td>
+                        <td class="p-3">
+                            <span th:if="${log.mbaType == 'IMPORT'}" class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">NHẬP</span>
+                            <span th:if="${log.mbaType == 'EXPORT'}" class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">XUẤT</span>
+                        </td>
+                        <td class="p-3 font-bold" th:text="${log.mbaQuantityChange > 0 ? '+' + log.mbaQuantityChange : log.mbaQuantityChange}"></td>
+                        <td class="p-3 text-gray-500 italic" th:text="${log.mbaNote}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<div class="max-w-7xl mx-auto px-4 pt-6">
+    <a th:href="@{/mba-admin}"
+       class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Quay lại Dashboard
+    </a>
+</div>
+    </main>
+</div>
+</body>
+</html>

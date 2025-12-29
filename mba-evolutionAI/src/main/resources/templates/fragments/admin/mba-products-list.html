@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý Sản phẩm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800">
+
+<div th:replace="~{fragments/mba-header :: navbar}"></div>
+
+<div class="flex max-w-7xl mx-auto min-h-[calc(100vh-64px)]">
+
+    <div th:replace="~{fragments/mba-admin-sidebar :: sidebar}"></div>
+
+    <main class="flex-1 p-8 w-full">
+
+        <h1 class="text-2xl font-bold mb-6 text-gray-800 border-l-4 border-blue-600 pl-4">Quản lý Sản phẩm</h1>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm mb-8 flex flex-col md:flex-row justify-between items-center border border-gray-100">
+            <h2 class="font-bold text-gray-700 text-lg">Danh sách Sản phẩm</h2>
+            <button onclick="openCreateModal()"
+                    class="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                Thêm sản phẩm mới
+            </button>
+        </div>
+
+        <div th:if="${successMessage}" class="bg-green-100 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded shadow-sm mb-6 flex items-center gap-3 animate-fade-in-up">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded shadow-sm mb-6 flex items-center gap-3 animate-fade-in-up">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="bg-gray-50 uppercase text-xs font-bold text-gray-500 border-b">
+                    <tr>
+                        <th class="px-6 py-4">ID</th>
+                        <th class="px-6 py-4">Ảnh</th>
+                        <th class="px-6 py-4">Tên sản phẩm</th>
+                        <th class="px-6 py-4">Giá bán</th>
+                        <th class="px-6 py-4">Danh mục</th>
+                        <th class="px-6 py-4 text-center">Tồn kho</th>
+                        <th class="px-6 py-4 text-center">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                    <tr th:each="product : ${products}" class="hover:bg-blue-50/50 transition duration-150">
+                        <td class="px-6 py-4 font-medium" th:text="${product.mbaProductId}"></td>
+                        <td class="px-6 py-4">
+                            <img th:src="${product.mbaImage}" class="w-12 h-12 object-contain rounded-md border bg-white p-1" alt="Product Image">
+                        </td>
+                        <td class="px-6 py-4 font-semibold text-gray-900" th:text="${product.mbaName}"></td>
+                        <td class="px-6 py-4 text-blue-600 font-bold" th:text="${#numbers.formatCurrency(product.mbaPrice)}"></td>
+                        <td class="px-6 py-4">
+                            <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium border" th:text="${product.mbaCategory}"></span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span th:if="${product.mbaStock > 0}" th:text="${product.mbaStock}" class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold"></span>
+                            <span th:if="${product.mbaStock == 0}" class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">Hết hàng</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button th:onclick="'editProduct(' + ${product.mbaProductId} + ')'"
+                                        class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition" title="Chỉnh sửa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                </button>
+                                <form th:action="@{/mba-admin/products/delete}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');" class="inline">
+                                    <input type="hidden" name="productId" th:value="${product.mbaProductId}" />
+                                    <button type="submit" class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition" title="Xóa">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${products.empty}" class="text-center py-12">
+                <div class="inline-block p-4 bg-gray-100 rounded-full mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900">Chưa có sản phẩm nào</h3>
+                <p class="text-gray-500 mt-1">Hãy thêm sản phẩm mới để bắt đầu kinh doanh.</p>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<div th:replace="~{fragments/admin/mba-product-modal :: modal}"></div>
+
+</body>
+</html>

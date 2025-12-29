@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Tin nhắn - MbaEvolutionAI Admin</title>
+    <link rel="stylesheet" th:href="@{/assets/index.css}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script th:src="@{/js/tailwind-config.js}"></script>
+</head>
+<body class="bg-gray-50 text-slate-800 antialiased font-sans">
+
+<div th:replace="~{fragments/mba-header :: navbar}"></div>
+
+<div class="max-w-4xl mx-auto px-4 py-8 min-h-screen">
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            Chi tiết Tin nhắn #<span th:text="${messageId}">1</span>
+        </h1>
+        <a th:href="@{/mba-admin/feedbacks}" class="text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
+            &larr; Quay lại Hộp thư
+        </a>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 space-y-4">
+
+        <div class="grid grid-cols-2 gap-4 border-b pb-4">
+            <div>
+                <p class="text-sm text-gray-500">Người gửi:</p>
+                <p class="font-medium text-gray-800" th:text="${message.mbaName}">Nguyễn Văn A</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Email:</p>
+                <p class="font-medium text-gray-800" th:text="${message.mbaEmail}">a@example.com</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Ngày gửi:</p>
+                <p class="font-medium text-gray-800" th:text="${#temporals.format(message.mbaSentAt, 'dd-MM-yyyy HH:mm')}">16-12-2025 14:00</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Trạng thái:</p>
+                <span th:classappend="${message.mbaStatus == 'New' ? 'bg-red-100 text-red-800' : (message.mbaStatus == 'Read' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800')}"
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      th:text="${message.mbaStatus}">Read</span>
+            </div>
+        </div>
+
+        <div>
+            <p class="text-sm text-gray-500 mb-2 font-bold">Nội dung:</p>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 whitespace-pre-wrap"
+                 th:text="${message.mbaMessage}">Nội dung dài của tin nhắn sẽ xuất hiện ở đây, bao gồm cả các ký tự xuống dòng.</div>
+        </div>
+
+        <div class="pt-4">
+            <form th:action="@{/mba-admin/feedbacks/resolve/{id}(id=${messageId})}" method="post" th:if="${message.mbaStatus != 'Resolved'}">
+                <button type="submit" class="bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition">
+                    Đánh dấu là Đã giải quyết (Resolved)
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

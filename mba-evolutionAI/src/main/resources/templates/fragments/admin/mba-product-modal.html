@@ -1,0 +1,148 @@
+<div th:fragment="modal" id="productModal"
+     class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+     xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl transform transition-all scale-100 animate-fade-in-up">
+
+        <form th:action="@{/mba-admin/products/save}" method="post" enctype="multipart/form-data" th:object="${productForm}" id="productFormHtml">
+
+            <input type="hidden" th:field="*{mbaProductId}" id="mbaProductId" />
+            <input type="hidden" th:field="*{mbaImage}" id="mbaImageHidden" />
+            <input type="hidden" th:field="*{mbaRating}" />
+            <input type="hidden" th:field="*{mbaReviewsCount}" />
+
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-900" id="modalTitle">Thêm sản phẩm mới</h3>
+                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên sản phẩm</label>
+                    <input type="text" th:field="*{mbaName}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-blue-500" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Giá bán (VNĐ)</label>
+                    <input type="number" th:field="*{mbaPrice}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Giá gốc (VNĐ)</label>
+                    <input type="number" th:field="*{mbaOriginalPrice}" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục</label>
+                    <select th:field="*{mbaCategory}" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        <option value="Laptop">Laptop</option>
+                        <option value="PC">PC Gaming</option>
+                        <option value="Monitor">Màn hình</option>
+                        <option value="Accessories">Phụ kiện</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Thương hiệu</label>
+                    <input type="text" th:field="*{mbaBrand}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tồn kho</label>
+                    <input type="number" th:field="*{mbaStock}" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                </div>
+
+                <div class="md:col-span-2 border border-dashed border-gray-300 p-4 rounded-xl bg-gray-50 text-center">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Ảnh sản phẩm</label>
+                    <input type="file" name="imageFile" id="imageFile" accept="image/*" onchange="previewImage(event)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+
+                    <div id="image-preview" class="mt-4 flex justify-center min-h-[100px] items-center">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                    <textarea th:field="*{mbaDescription}" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
+                </div>
+
+                <div class="md:col-span-2 border-t pt-4 mt-2">
+                    <h4 class="font-bold text-gray-800 mb-3 uppercase text-xs tracking-wider">Cấu hình chi tiết</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="CPU" th:field="*{mbaCpu}" class="border rounded px-3 py-2 text-sm focus:border-blue-500" />
+                        <input type="text" placeholder="RAM" th:field="*{mbaRam}" class="border rounded px-3 py-2 text-sm focus:border-blue-500" />
+                        <input type="text" placeholder="Ổ cứng" th:field="*{mbaStorage}" class="border rounded px-3 py-2 text-sm focus:border-blue-500" />
+                        <input type="text" placeholder="VGA/GPU" th:field="*{mbaGpu}" class="border rounded px-3 py-2 text-sm focus:border-blue-500" />
+                        <input type="text" placeholder="Màn hình" th:field="*{mbaScreen}" class="border rounded px-3 py-2 text-sm col-span-2 focus:border-blue-500" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-2xl">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">Hủy</button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-lg">
+                    <span id="submitBtnText">Lưu lại</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function openModal() { document.getElementById('productModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('productModal').classList.add('hidden'); }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById('image-preview');
+                output.innerHTML = `<img src="${reader.result}" class="h-32 object-contain rounded-lg shadow-sm border bg-white p-2"/>`;
+            }
+            if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function openCreateModal() {
+            document.getElementById('productFormHtml').reset();
+            document.getElementById('mbaProductId').value = '';
+            document.getElementById('mbaImageHidden').value = '';
+            document.getElementById('image-preview').innerHTML = '';
+            document.getElementById('modalTitle').innerText = 'Thêm sản phẩm mới';
+            document.getElementById('submitBtnText').innerText = 'Thêm mới';
+            openModal();
+        }
+
+        async function editProduct(id) {
+            try {
+                // Đảm bảo URL này khớp với Controller (mình dùng /mba-admin/products/get/{id})
+                const res = await fetch(`/mba-admin/products/get/${id}`);
+                if (res.ok) {
+                    const p = await res.json();
+
+                    // Đổ dữ liệu vào form
+                    document.getElementById('mbaProductId').value = p.mbaProductId;
+                    document.getElementById('mbaName').value = p.mbaName;
+                    document.getElementById('mbaPrice').value = p.mbaPrice;
+                    document.getElementById('mbaOriginalPrice').value = p.mbaOriginalPrice;
+                    document.getElementById('mbaCategory').value = p.mbaCategory;
+                    document.getElementById('mbaBrand').value = p.mbaBrand;
+                    document.getElementById('mbaStock').value = p.mbaStock;
+                    document.getElementById('mbaDescription').value = p.mbaDescription;
+                    document.getElementById('mbaImageHidden').value = p.mbaImage || '';
+
+                    // Đổ dữ liệu cấu hình
+                    document.getElementById('mbaCpu').value = p.mbaCpu || '';
+                    document.getElementById('mbaRam').value = p.mbaRam || '';
+                    document.getElementById('mbaStorage').value = p.mbaStorage || '';
+                    document.getElementById('mbaGpu').value = p.mbaGpu || '';
+                    document.getElementById('mbaScreen').value = p.mbaScreen || '';
+
+                    // Preview ảnh cũ
+                    const previewDiv = document.getElementById('image-preview');
+                    previewDiv.innerHTML = p.mbaImage ? `<img src="${p.mbaImage}" class="h-32 object-contain rounded-lg border p-2 bg-white"/>` : 'Chưa có ảnh';
+
+                    document.getElementById('modalTitle').innerText = 'Chỉnh sửa sản phẩm #' + id;
+                    document.getElementById('submitBtnText').innerText = 'Lưu thay đổi';
+                    openModal();
+                }
+            } catch (e) { console.error(e); }
+        }
+    </script>
+</div>

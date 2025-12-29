@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Về chúng tôi - MbaEvolutionAI</title>
+    <link rel="stylesheet" th:href="@{/assets/index.css}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script th:src="@{/js/tailwind-config.js}"></script>
+</head>
+<body class="bg-gray-50 text-slate-800 antialiased font-sans">
+
+<div th:replace="~{fragments/mba-header :: navbar}"></div>
+
+<div class="max-w-4xl mx-auto px-4 py-16 min-h-screen">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-6 border-b pb-4">Về MbaEvolutionAI</h1>
+
+    <div class="space-y-6 text-gray-700 leading-relaxed">
+        <p>
+            MbaEvolutionAI được thành lập với sứ mệnh mang đến những sản phẩm công nghệ chất lượng cao, đặc biệt là Laptop Gaming và các thiết bị điện tử hiệu năng mạnh, tới tay người tiêu dùng Việt Nam. Chúng tôi cam kết về chất lượng sản phẩm, dịch vụ khách hàng tận tâm và giá cả cạnh tranh.
+        </p>
+        <h2 class="text-2xl font-bold text-gray-800 pt-4">Giá trị cốt lõi</h2>
+        <ul class="list-disc list-inside space-y-2 ml-4">
+            <li>**Chất lượng:** Chỉ bán các sản phẩm chính hãng, có nguồn gốc rõ ràng.</li>
+            <li>**Tận tâm:** Hỗ trợ khách hàng 24/7 trước, trong và sau khi mua hàng.</li>
+            <li>**Đổi mới:** Liên tục cập nhật các sản phẩm công nghệ mới nhất trên thị trường.</li>
+        </ul>
+        <p class="pt-4 text-center text-sm text-gray-500">
+            Xin chân thành cảm ơn sự tin tưởng và ủng hộ của quý khách hàng!
+        </p>
+    </div>
+</div>
+
+<div th:replace="~{fragments/mba-footer :: footer}"></div>
+
+</body>
+</html>

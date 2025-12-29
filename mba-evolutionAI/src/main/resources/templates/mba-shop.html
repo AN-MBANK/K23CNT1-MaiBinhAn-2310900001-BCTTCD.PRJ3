@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cửa Hàng - MbaEvolutionAI</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .currency::after { content: " ₫"; }
+
+        /* Custom Scrollbar cho Webkit */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+        /* Hiệu ứng Neon cho Card */
+        .neon-card:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), inset 0 0 10px rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-950 text-gray-200 antialiased relative min-h-screen flex flex-col">
+
+<div class="fixed inset-0 z-[-1]">
+    <img src="https://wallpapers.com/images/hd/gaming-setup-background-7mt8184753464154.jpg"
+         alt="Background"
+         class="w-full h-full object-cover opacity-20 blur-sm" />
+    <div class="absolute inset-0 bg-gray-950/80"></div>
+</div>
+
+<div th:replace="~{fragments/mba-header :: navbar}"></div>
+
+<main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+
+    <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2 flex items-center gap-3">
+                <span class="w-1.5 h-8 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)]"></span>
+                Cửa Hàng
+            </h1>
+            <p class="text-gray-400 text-sm">Khám phá kho vũ khí Gaming tối thượng.</p>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+
+        <aside class="w-full lg:w-72 space-y-8 h-fit lg:sticky lg:top-24 z-10">
+            <form th:action="@{/shop}" method="GET"
+                  class="bg-gray-900/60 backdrop-blur-xl p-6 rounded-2xl border border-gray-800 shadow-xl">
+
+                <div class="flex items-center gap-2 mb-6 text-white font-bold border-b border-gray-700 pb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    Bộ lọc tìm kiếm
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Từ khóa</label>
+                    <div class="relative">
+                        <input type="text" name="query" placeholder="Tìm tên sản phẩm..." th:value="${searchQuery}"
+                               class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-3 pr-10 py-2.5 text-sm text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none placeholder-gray-500" />
+                        <svg class="w-4 h-4 text-gray-500 absolute right-3 top-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Danh mục</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <div class="relative flex items-center">
+                                <input type="radio" name="category" value="All" th:checked="${selectedCategory == 'All' || selectedCategory == null}"
+                                       class="peer appearance-none w-4 h-4 border border-gray-600 rounded-full bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all" />
+                                <div class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            </div>
+                            <span class="text-sm text-gray-400 group-hover:text-white transition-colors"
+                                  th:classappend="${selectedCategory == 'All' || selectedCategory == null} ? 'text-white font-bold'">Tất cả</span>
+                        </label>
+
+                        <label th:each="cat : ${categories}" class="flex items-center gap-3 cursor-pointer group">
+                            <div class="relative flex items-center">
+                                <input type="radio" name="category" th:value="${cat}" th:checked="${selectedCategory == cat}"
+                                       class="peer appearance-none w-4 h-4 border border-gray-600 rounded-full bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all" />
+                                <div class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            </div>
+                            <span class="text-sm text-gray-400 group-hover:text-white transition-colors"
+                                  th:classappend="${selectedCategory == cat} ? 'text-white font-bold'" th:text="${cat}">Category</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                        Giá tối đa: <span class="text-blue-400" th:text="${#numbers.formatDecimal(priceRange / 1000000, 0, 0)}"></span> Triệu
+                    </label>
+                    <input type="range" name="maxPrice" min="0" max="100000000" step="1000000" th:value="${priceRange}"
+                           oninput="this.form.submit()"
+                           class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 transition-all" />
+                    <div class="flex justify-between text-[10px] text-gray-500 mt-2 font-mono">
+                        <span>0đ</span>
+                        <span>100Tr+</span>
+                    </div>
+                </div>
+
+
+            </form>
+        </aside>
+
+        <div class="flex-1">
+
+            <div class="flex flex-wrap justify-between items-center mb-6 bg-gray-900/40 backdrop-blur-md p-4 rounded-xl border border-gray-800">
+                <p class="text-gray-400 text-sm">Tìm thấy <span class="text-white font-bold" th:text="${products.size()}">0</span> sản phẩm</p>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500 hidden sm:block">Sắp xếp theo:</span>
+                    <select class="bg-gray-800 border border-gray-700 text-white text-sm rounded-lg p-2 outline-none cursor-pointer"
+                            onchange="location = this.value;">
+                        <option th:value="@{/shop(page=0, query=${searchQuery}, category=${selectedCategory}, sortField='mbaName', sortDir='asc')}"
+                                th:selected="${sortField == 'mbaName'}">Tên: A-Z</option>
+                        <option th:value="@{/shop(page=0, query=${searchQuery}, category=${selectedCategory}, sortField='mbaPrice', sortDir='asc')}"
+                                th:selected="${sortField == 'mbaPrice' && sortDir == 'asc'}">Giá: Thấp đến Cao</option>
+                        <option th:value="@{/shop(page=0, query=${searchQuery}, category=${selectedCategory}, sortField='mbaPrice', sortDir='desc')}"
+                                th:selected="${sortField == 'mbaPrice' && sortDir == 'desc'}">Giá: Cao đến Thấp</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div th:if="${products.empty}" class="text-center py-24 bg-gray-900/20 rounded-3xl border border-dashed border-gray-800">
+                <div class="inline-flex p-6 bg-gray-800/50 rounded-full mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Không tìm thấy sản phẩm</h3>
+                <p class="text-gray-500 max-w-xs mx-auto">Thử điều chỉnh lại bộ lọc hoặc tìm kiếm từ khóa khác xem sao.</p>
+                <a th:href="@{/shop}" class="inline-block mt-6 text-blue-400 hover:text-blue-300 font-medium hover:underline">Xóa bộ lọc</a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <div th:each="product : ${products}">
+                    <div class="group relative bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-800 shadow-lg transition-all duration-300 overflow-hidden flex flex-col h-full neon-card hover:-translate-y-1">
+
+                        <div th:if="${product.mbaOriginalPrice > product.mbaPrice}"
+                             class="absolute top-3 left-3 z-20 bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded animate-pulse shadow-lg shadow-red-600/20">
+                            SALE
+                        </div>
+
+                        <div class="h-60 p-6 flex items-center justify-center bg-gradient-to-b from-gray-800/30 to-gray-900/30 relative overflow-hidden">
+                            <img th:src="${product.mbaImage}" th:alt="${product.mbaName}"
+                                 class="h-full w-full object-contain transform group-hover:scale-110 transition-transform duration-500 ease-in-out drop-shadow-xl z-10">
+
+                            <div class="absolute inset-0 bg-gray-950/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 z-20">
+                                <a th:href="@{'/cart/add/' + ${product.mbaProductId}}"
+                                   class="flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-xl transition-all active:scale-95">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                    <span class="ml-2 font-semibold">Thêm vào giỏ</span>
+                                </a>
+                                <a th:href="@{'/product/' + ${product.mbaProductId}}"
+                                   class="w-12 h-12 bg-white text-gray-900 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 hover:scale-110 transition-all" title="Xem chi tiết">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="p-5 flex-1 flex flex-col border-t border-gray-800">
+                            <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2" th:text="${product.mbaCategory}">Category</p>
+                            <h3 class="font-bold text-gray-100 text-base mb-2 line-clamp-2 group-hover:text-blue-400 transition-colors" th:text="${product.mbaName}">Name</h3>
+
+                            <div class="mt-auto pt-3 flex items-end justify-between">
+                                <div>
+                                    <span class="block text-lg font-extrabold text-blue-400 currency" th:text="${#numbers.formatDecimal(product.mbaPrice, 0, 'POINT', 0, 'POINT')}"></span>
+                                    <span th:if="${product.mbaOriginalPrice > product.mbaPrice}" class="text-xs text-gray-500 line-through currency" th:text="${#numbers.formatDecimal(product.mbaOriginalPrice, 0, 'POINT', 0, 'POINT')}"></span>
+                                </div>
+                                <div class="flex text-yellow-500 gap-0.5 text-[10px]">
+                                    <svg th:each="i: ${#numbers.sequence(1,5)}" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div th:if="${totalPages > 1}" class="mt-12 flex justify-center items-center gap-2">
+                <a th:href="@{/shop(page=${currentPage - 1}, query=${searchQuery}, category=${selectedCategory}, sortField=${sortField}, sortDir=${sortDir})}"
+                   th:classappend="${currentPage == 0} ? 'pointer-events-none opacity-50' : ''"
+                   class="px-4 py-2 rounded-lg bg-gray-800 text-gray-400 hover:bg-blue-600 hover:text-white transition">
+                    Trước
+                </a>
+
+                <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:href="@{/shop(page=${i}, query=${searchQuery}, category=${selectedCategory}, sortField=${sortField}, sortDir=${sortDir})}"
+                       th:text="${i + 1}"
+                       th:classappend="${currentPage == i} ? 'bg-blue-600 text-white font-bold' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'"
+                       class="px-4 py-2 rounded-lg transition">
+                    </a>
+                </th:block>
+
+                <a th:href="@{/shop(page=${currentPage + 1}, query=${searchQuery}, category=${selectedCategory}, sortField=${sortField}, sortDir=${sortDir})}"
+                   th:classappend="${currentPage == totalPages - 1} ? 'pointer-events-none opacity-50' : ''"
+                   class="px-4 py-2 rounded-lg bg-gray-800 text-gray-400 hover:bg-blue-600 hover:text-white transition">
+                    Sau
+                </a>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/mba-footer :: footer}"></div>
+
+</body>
+</html>

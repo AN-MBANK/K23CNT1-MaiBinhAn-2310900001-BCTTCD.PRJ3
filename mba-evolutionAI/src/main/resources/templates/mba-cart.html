@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Giỏ hàng - MbaEvolutionAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-200 min-h-screen">
+<div th:replace="~{fragments/mba-header :: navbar}"></div>
+
+<main class="max-w-5xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-black text-white mb-8">GIỎ HÀNG CỦA TÔI</h1>
+
+    <div th:if="${detailedCart == null || detailedCart.empty}" class="text-center py-20 bg-glass rounded-3xl">
+        <p class="text-gray-500 text-lg">Hổng có gì trong này hết trơn...</p>
+        <a href="/shop" class="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-xl font-bold">Mua đồ ngay</a>
+    </div>
+
+    <div th:unless="${detailedCart == null || detailedCart.empty}" class="space-y-4">
+        <div th:each="itemMap : ${detailedCart}" th:with="product=${itemMap.product}, quantity=${itemMap.quantity}, subTotal=${itemMap.subTotal}"
+             class="flex items-center gap-6 p-6 bg-glass rounded-2xl border border-gray-800">
+
+            <img th:src="${product.mbaImage}" class="w-20 h-20 object-contain bg-white rounded-lg p-1">
+            <div class="flex-1">
+                <h3 class="font-bold text-white text-lg" th:text="${product.mbaName}"></h3>
+                <p class="text-blue-400 font-bold" th:text="${#numbers.formatCurrency(product.mbaPrice)}"></p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <form th:action="@{/cart/update}" method="POST" class="flex items-center bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                    <input type="hidden" name="productId" th:value="${product.mbaProductId}" />
+                    <button type="submit" name="quantity" th:value="${quantity - 1}" class="px-3 py-1 text-gray-400 hover:text-white">-</button>
+                    <span class="px-4 font-bold text-white" th:text="${quantity}"></span>
+                    <button type="submit" name="quantity" th:value="${quantity + 1}" class="px-3 py-1 text-gray-400 hover:text-white">+</button>
+                </form>
+
+                <p class="font-black text-white w-32 text-right" th:text="${#numbers.formatCurrency(subTotal)}"></p>
+            </div>
+        </div>
+
+        <div class="mt-8 p-8 bg-gray-900 rounded-3xl border border-gray-800 flex justify-between items-center">
+            <div>
+                <p class="text-gray-500">Tổng cộng:</p>
+                <h2 class="text-4xl font-black text-blue-500" th:text="${#numbers.formatCurrency(totalPrice)}"></h2>
+            </div>
+            <a th:href="@{/checkout}" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-4 px-10 rounded-2xl transition transform hover:-translate-y-1">THANH TOÁN NGAY</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

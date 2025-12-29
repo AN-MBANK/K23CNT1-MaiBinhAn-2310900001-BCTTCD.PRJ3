@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6">
+<div th:replace="~{fragments/mba-header :: navbar}"></div>
+<div class="flex max-w-7xl mx-auto">
+    <div th:replace="~{fragments/mba-admin-sidebar :: sidebar}"></div>
+
+    <main class="flex-1 p-8 w-full">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Quản lý Đơn hàng</h1>
+
+    <div class="mb-6 flex gap-4 items-center bg-white p-4 rounded-lg shadow-sm border">
+        <form th:action="@{/mba-admin/orders}" method="get" class="flex items-center gap-3">
+            <label class="font-bold text-gray-700">🔍 Lọc theo trạng thái:</label>
+            <select name="status" onchange="this.form.submit()" class="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="ALL" th:selected="${currentStatus == 'ALL' or currentStatus == null}">-- Tất cả --</option>
+                <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Chờ xử lý</option>
+                <option value="AWAITING_PAYMENT" th:selected="${currentStatus == 'AWAITING_PAYMENT'}">Chờ thanh toán</option>
+                <option value="SHIPPING" th:selected="${currentStatus == 'SHIPPING'}">Đang giao hàng</option>
+                <option value="COMPLETED" th:selected="${currentStatus == 'COMPLETED'}">Đã hoàn thành</option>
+                <option value="CANCELLED" th:selected="${currentStatus == 'CANCELLED'}">Đã hủy</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+            <tr>
+                <th class="py-3 px-4 text-center font-semibold text-gray-600 border-b uppercase text-sm">Mã ĐH</th>
+                <th class="py-3 px-4 text-left font-semibold text-gray-600 border-b uppercase text-sm">Khách hàng</th>
+                <th class="py-3 px-4 text-right font-semibold text-gray-600 border-b uppercase text-sm">Tổng tiền</th>
+                <th class="py-3 px-4 text-center font-semibold text-gray-600 border-b uppercase text-sm">Ngày đặt</th>
+                <th class="py-3 px-4 text-center font-semibold text-gray-600 border-b uppercase text-sm">Trạng thái</th>
+                <th class="py-3 px-4 text-center font-semibold text-gray-600 border-b uppercase text-sm">Thao tác</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            <tr th:each="order : ${orders}" class="hover:bg-blue-50 transition-colors">
+                <td class="py-3 px-4 text-center font-bold text-blue-600" th:text="'#' + ${order.mbaOrderId}"></td>
+
+                <td class="py-3 px-4">
+                    <div class="font-medium text-gray-900" th:text="${order.mbaCustomerName}"></div>
+                    <div class="text-sm text-gray-500" th:text="${order.mbaPhone}"></div>
+                </td>
+
+                <td class="py-3 px-4 text-right font-bold text-red-600"
+                    th:text="${#numbers.formatDecimal(order.mbaTotalAmount, 0, 'POINT', 0, 'COMMA')} + ' đ'">
+                </td>
+
+                <td class="py-3 px-4 text-center text-sm text-gray-600"
+                    th:text="${#temporals.format(order.mbaOrderDate, 'dd-MM-yyyy HH:mm')}">
+                </td>
+
+                <td class="py-3 px-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm inline-block min-w-[100px]"
+                              th:classappend="${order.mbaStatus == 'PENDING' ? 'bg-yellow-500' :
+                                              (order.mbaStatus == 'AWAITING_PAYMENT' ? 'bg-orange-500' :
+                                              (order.mbaStatus == 'SHIPPING' ? 'bg-blue-600' :
+                                              (order.mbaStatus == 'COMPLETED' ? 'bg-green-600' :
+                                              (order.mbaStatus == 'CANCELLED' ? 'bg-red-500' : 'bg-gray-500'))))}"
+                              th:text="${order.mbaStatus}">
+                        </span>
+                </td>
+
+                <td class="py-3 px-4 text-center">
+                    <form th:action="@{/mba-admin/orders/update-status}" method="post" class="flex items-center justify-center gap-2">
+                        <input type="hidden" name="orderId" th:value="${order.mbaOrderId}" />
+
+                        <select name="newStatus" class="text-sm border border-gray-300 rounded px-2 py-1 bg-gray-50 focus:outline-none focus:border-blue-500">
+                            <option value="PENDING" th:selected="${order.mbaStatus == 'PENDING'}">Chờ xử lý</option>
+                            <option value="SHIPPING" th:selected="${order.mbaStatus == 'SHIPPING'}">Đang giao</option>
+                            <option value="COMPLETED" th:selected="${order.mbaStatus == 'COMPLETED'}">Hoàn thành</option>
+                            <option value="CANCELLED" th:selected="${order.mbaStatus == 'CANCELLED'}">Hủy đơn</option>
+                        </select>
+
+                        <button type="submit" class="bg-blue-600 text-white p-1.5 rounded hover:bg-blue-700 transition shadow" title="Lưu thay đổi">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        </button>
+
+                        <a th:href="@{/mba-admin/orders/detail/{id}(id=${order.mbaOrderId})}" class="bg-gray-100 text-gray-600 p-1.5 rounded hover:bg-gray-200 border border-gray-300 transition" title="Xem chi tiết">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                        </a>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${orders.isEmpty()}">
+                <td colspan="6" class="py-8 text-center text-gray-500">
+                    Không tìm thấy đơn hàng nào phù hợp.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+<!--    <div th:replace="fragments/admin/mba-product-modal :: modal"></div>-->
+    </main>
+</div>
+
+</body>
+</html>
