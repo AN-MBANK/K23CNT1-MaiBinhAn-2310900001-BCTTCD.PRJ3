@@ -1,0 +1,7 @@
+{
+  "name": "MbaEvolutionAI",
+  "description": "Website bán hàng Laptop/PC tích hợp AI tư vấn thông minh, hỗ trợ thanh toán đa nền tảng.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
